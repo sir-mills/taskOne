@@ -31,5 +31,5 @@ app.get("/api/hello", async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`server is running on ${PORT}`);
+  console.log(`server is running on ${port}`);
 });
