@@ -7,10 +7,10 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 1113;
 
-app.get("/api/hello", async (req, res) => {
+export default async function handler(req, res) {
   try {
     const visitorName = req.query.visitorName || anonny;
-    const visitorIp = req.ip || req.connection.remoteAddress;
+    const visitorIp = req.ip || req.headers["x-forwarded-for"];
     const location = axios.get(`https://whoer.com/ip/${visitorIp}`);
     const { country } = (await location).data;
     const { city } = (await location).data;
@@ -28,7 +28,7 @@ app.get("/api/hello", async (req, res) => {
     console.error(error);
     res.status(500).json({ error: `an error occured` });
   }
-});
+}
 
 app.listen(port, () => {
   console.log(`server is running on ${port}`);
