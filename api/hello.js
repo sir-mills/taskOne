@@ -10,11 +10,11 @@ const port = process.env.PORT || 1113;
 app.get("/api/hello", async (req, res) => {
   try {
     const visitorName = req.query.visitorName || "Anonymous";
-    const visitorIp = req.ip || req.headers["x-forwarded-for"] || "8.8.8.8"; // Use Google's DNS as fallback
+    const visitorIp = req.query.visitorIp;
+    //const visitorIp = req.ip || req.headers["x-forwarded-for"] || "154.161.131.113";
 
     console.log(`Visitor IP: ${visitorIp}`);
 
-    // Using ipapi.co for IP geolocation
     const locationResponse = await axios.get(
       `https://ipapi.co/${visitorIp}/json/`
     );
