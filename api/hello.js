@@ -7,29 +7,47 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 1113;
 
-export default async function handler(req, res) {
+app.get("/api/hello", async (req, res) => {
   try {
-    const visitorName = req.query.visitorName || anonny;
-    const visitorIp = req.ip || req.headers["x-forwarded-for"];
-    const location = axios.get(`https://whoer.com/ip/${visitorIp}`);
-    const { country } = (await location).data;
-    const { city } = (await location).data;
-    const weather = axios.get(
-      `api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${process.env.OPENWEATHER_API_KEY}&unit=metric`
+    const visitorName = req.query.visitorName || "Anonymous";
+    const visitorIp = req.ip || req.headers["x-forwarded-for"] || "8.8.8.8"; // Use Google's DNS as fallback
+
+    console.log(`Visitor IP: ${visitorIp}`);
+
+    // Using ipapi.co for IP geolocation
+    const locationResponse = await axios.get(
+      `https://ipapi.co/${visitorIp}/json/`
     );
-    const temperature = (await weather).data.main.temp;
+    console.log("Location data:", locationResponse.data);
+
+    const { country_name: country, city } = locationResponse.data;
+
+    if (!city) {
+      throw new Error("Unable to determine city from IP");
+    }
+
+    const weatherResponse = await axios.get(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${process.env.OPENWEATHER_API_KEY}&units=metric`
+    );
+    console.log("Weather data:", weatherResponse.data);
+
+    const temperature = weatherResponse.data.main.temp;
+
     res.json({
       clientName: visitorName,
       finder: country,
       found: city,
-      greeting: `Hello ${visitorName} from ${country} temperature is ${temperature} degree C in ${city}`,
+      greeting: `Hello ${visitorName} from ${country}, temperature is ${temperature} degree C in ${city}`,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: `an error occured` });
+    console.error("Error details:", error.message);
+    if (error.response) {
+      console.error("Error response:", error.response.data);
+    }
+    res.status(500).json({ error: `An error occurred: ${error.message}` });
   }
-}
+});
 
 app.listen(port, () => {
-  console.log(`server is running on ${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
