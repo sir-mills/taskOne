@@ -9,7 +9,7 @@ const port = process.env.PORT || 1113;
 
 app.get("/api/hello", async (req, res) => {
   try {
-    const visitorName = req.query.visitorName || anon;
+    const visitorName = req.query.visitorName || anonny;
     const visitorIp = req.ip || req.connection.remoteAddress;
     const location = axios.get(`https://whoer.com/ip/${visitorIp}`);
     const { country } = (await location).data;
