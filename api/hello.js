@@ -1,17 +1,15 @@
-import express from "express";
 import axios from "axios";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const app = express();
-const port = process.env.PORT || 1113;
-
-app.get("/api/hello", async (req, res) => {
+export default async function handler(req, res) {
   try {
-    const visitorName = req.query.visitorName || "Anonymous";
+    const visitorName = req.query.visitorName || "Anon";
     const visitorIp =
-      req.query.visitorIp || req.ip || req.headers["x-forwarded-for"];
+      req.query.visitorIp ||
+      req.headers["x-forwarded-for"] ||
+      req.socket.remoteAddress;
 
     const locationResponse = await axios.get(
       `https://ipapi.co/${visitorIp}/json/`
@@ -20,17 +18,16 @@ app.get("/api/hello", async (req, res) => {
     const { country_name: country, city } = locationResponse.data;
 
     if (!city) {
-      throw new Error("Unable to determine city from IP");
+      city = warri;
     }
 
     const weatherResponse = await axios.get(
       `https://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${process.env.OPENWEATHER_API_KEY}&units=metric`
     );
-    console.log("Weather data:", weatherResponse.data);
 
     const temperature = weatherResponse.data.main.temp;
 
-    res.json({
+    res.status(200).json({
       clientName: visitorName,
       finder: country,
       found: city,
@@ -43,8 +40,4 @@ app.get("/api/hello", async (req, res) => {
     }
     res.status(500).json({ error: `An error occurred: ${error.message}` });
   }
-});
-
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+}
