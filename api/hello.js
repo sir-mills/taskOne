@@ -10,15 +10,12 @@ const port = process.env.PORT || 1113;
 app.get("/api/hello", async (req, res) => {
   try {
     const visitorName = req.query.visitorName || "Anonymous";
-    const visitorIp = req.query.visitorIp;
-    //const visitorIp = req.ip || req.headers["x-forwarded-for"] || "154.161.131.113";
-
-    console.log(`Visitor IP: ${visitorIp}`);
+    const visitorIp =
+      req.query.visitorIp || req.ip || req.headers["x-forwarded-for"];
 
     const locationResponse = await axios.get(
       `https://ipapi.co/${visitorIp}/json/`
     );
-    console.log("Location data:", locationResponse.data);
 
     const { country_name: country, city } = locationResponse.data;
 
