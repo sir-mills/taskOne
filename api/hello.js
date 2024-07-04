@@ -5,7 +5,7 @@ dotenv.config();
 
 export default async function handler(req, res) {
   try {
-    const visitorName = req.query.visitorName || "Anon";
+    const visitor_name = req.query.visitor_name || "Anon";
     const visitorIp =
       req.query.visitorIp ||
       req.headers["x-forwarded-for"] ||
