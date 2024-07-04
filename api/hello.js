@@ -28,10 +28,9 @@ export default async function handler(req, res) {
     const temperature = weatherResponse.data.main.temp;
 
     res.status(200).json({
-      clientName: visitorName,
-      finder: country,
-      found: city,
-      greeting: `Hello ${visitorName} from ${country}, temperature is ${temperature} degree C in ${city}`,
+      client_ip: visitorIp,
+      location: city,
+      greeting: `Hello ${visitorName} the temperature is ${temperature} degrees Celcius in ${city}`,
     });
   } catch (error) {
     console.error("Error details:", error.message);
