@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     res.status(200).json({
       client_ip: visitorIp,
       location: city,
-      greeting: `Hello ${visitorName} the temperature is ${temperature} degrees Celcius in ${city}`,
+      greeting: `Hello ${visitor_name} the temperature is ${temperature} degrees Celcius in ${city}`,
     });
   } catch (error) {
     console.error("Error details:", error.message);
